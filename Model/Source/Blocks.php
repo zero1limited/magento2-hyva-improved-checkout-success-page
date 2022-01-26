@@ -1,6 +1,6 @@
 <?php
 
-namespace Zero1\ImprovedCheckoutSuccessPage\Model\Source;
+namespace Zero1\ImprovedCheckoutSuccessPageHyva\Model\Source;
 
 use Magento\Cms\Model\BlockFactory;
 use Magento\Framework\Data\OptionSourceInterface;
