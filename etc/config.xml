@@ -1,0 +1,32 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <improved_checkout_success_page>
+            <general>
+                <page_title>Thank you for your order %customer_name%!</page_title>
+            </general>
+            <order_information_row>
+                <enable>1</enable>
+                <enable_order_information>1</enable_order_information>
+                <enable_shipping_information>1</enable_shipping_information>
+                <enable_billing_information>1</enable_billing_information>
+                <row_sort_order>1</row_sort_order>
+            </order_information_row>
+            <cms_static_block_row>
+                <enable>0</enable>
+                <row_sort_order>2</row_sort_order>
+            </cms_static_block_row>
+            <related_products_row>
+                <enable>1</enable>
+                <title>Based on your order, we think you might like these...</title>
+                <image_type>image</image_type>
+                <row_sort_order>3</row_sort_order>
+            </related_products_row>
+            <newsletter_row>
+                <enable>1</enable>
+                <newsletter_text>Sign up to our newsletter</newsletter_text>
+                <row_sort_order>4</row_sort_order>
+            </newsletter_row>
+        </improved_checkout_success_page>
+    </default>
+</config>

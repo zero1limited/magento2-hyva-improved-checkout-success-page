@@ -1,0 +1,126 @@
+<?php
+/** @var Zero1\ImprovedCheckoutSuccessPage\Block\Onepage\Success $block */
+?>
+<div id="zero1-advanced-success">
+    <div class="content-block intro">
+        <h1><?php echo $block->getPageTitle(); ?></h1>
+        <?php if ($block->getIntroText() != '') : ?>
+            <p><?php echo $block->escapeHtml($block->getIntroText()); ?></p>
+        <?php endif; ?>
+    </div>
+
+    <?php if ($block->getConfigFlag('order_information_row', 'enable') === true) : ?>
+        <div class="content-block order-information <?php echo $block->escapeHtml($block->getOrderInformationColumnCount()); ?>"
+             id="rowitem-<?php echo $block->escapeHtml($block->getRowSortOrder('order_information_row')); ?>">
+            <?php if ($block->getConfigFlag('order_information_row', 'enable_order_information') === true) : ?>
+                <div class="order">
+                    <h3><?php echo __('Order Details'); ?></h3>
+                    <p><?php echo __('Order Number: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['incrementId']) ?></span></p>
+                    <p><?php echo __('Order Total: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['baseGrandTotal']) ?></span></p>
+                    <p><?php echo __('Order Date: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['createdAt']) ?></span></p>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($block->getConfigFlag('order_information_row', 'enable_shipping_information') === true) : ?>
+                <div class="shipping">
+                    <h3><?php echo __('Shipping Details'); ?></h3>
+                    <?php if ($block->getShippingDetails()['company']) : ?>
+                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['company']); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($block->getShippingDetails()['street'][1])) : ?>
+                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]) . ' ' .
+                                $block->escapeHtml($block->getShippingDetails()['street'][1]); ?></p>
+                    <?php else : ?>
+                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]); ?></p>
+                    <?php endif; ?>
+                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['city']); ?></p>
+                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['region']); ?></p>
+                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['postcode']); ?></p>
+                    <?php if ($block->getShippingDetails()['countryId']) : ?>
+                        <p><?php $block->escapeHtml($block->getShippingDetails()['countryId']); ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
+            <?php if ($block->getConfigFlag('order_information_row', 'enable_billing_information') === true) : ?>
+                <div class="billing">
+                    <h3><?php echo __('Billing Details'); ?></h3>
+                    <?php if ($block->getBillingDetails()['company']) : ?>
+                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['company']); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($block->getBillingDetails()['street'][1])) : ?>
+                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['street'][0]) . ' ' .
+                                $block->escapeHtml($block->getBillingDetails()['street'][1]); ?></p>
+                    <?php else : ?>
+                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['street'][0]); ?></p>
+                    <?php endif; ?>
+                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['city']); ?></p>
+                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['region']); ?></p>
+                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['postcode']); ?></p>
+                    <?php if ($block->getBillingDetails()['countryId']) : ?>
+                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['countryId']); ?></p>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($block->getStaticBlockToRender() !== null) : ?>
+        <div class="content-block cms-block" id="rowitem-<?php echo $block->escapeHtml($block->getRowSortOrder('cms_static_block_row')); ?>">
+            <?php echo $block->getStaticBlockToRender(); ?>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($block->getNewsletterBlock() !== null) : ?>
+        <div class="content-block newsletter" id="rowitem-<?php echo $block->escapeHtml($block->getRowSortOrder('newsletter_row')); ?>">
+            <div class="newsletter-wrap">
+                <?php if ($block->getNewsletterText() !== null) : ?>
+                    <h3><?php echo $block->escapeHtml($block->getNewsletterText()); ?></h3>
+                <?php endif; ?>
+                <?php echo $block->getNewsletterBlock(); ?>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($block->relatedProductsAreAbleToRender() === true) : ?>
+        <?php if (!empty($block->getRelatedProducts())) : ?>
+            <div class="content-block related-products-list"
+                 id="rowitem-<?php echo $block->escapeHtml($block->getRowSortOrder('related_products_row')); ?>">
+                <?php if ($block->getRelatedProductsTitleText() !== null) : ?>
+                    <h3><?php echo $block->escapeHtml($block->getRelatedProductsTitleText()); ?></h3>
+                <?php endif; ?>
+                <ul>
+                    <?php $count = 0; ?>
+                    <?php foreach ($block->getRelatedProducts() as $relatedProduct) : ?>
+                        <?php $count++ ;?>
+                        <li class="block">
+                            <a href="<?php echo $block->escapeUrl($relatedProduct->getProductUrl()); ?>">
+                                <img src="<?php echo $block->escapeHtml($block->getRelatedProductImage($relatedProduct)); ?>"
+                                     alt="<?php echo $block->escapeHtml($relatedProduct->getName()); ?>" />
+                            </a>
+                            <a href="<?php echo $block->escapeUrl($relatedProduct->getProductUrl()); ?>">
+                                <h5><?php echo $block->escapeHtml($relatedProduct->getName()); ?></h5>
+                            </a>
+                            <p><?php echo $block->escapeHtml($block->getCurrentCurrencyCode() .
+                                    number_format($relatedProduct->getPrice(), 2)); ?>
+                            </p>
+                        </li>
+                        <?php if ($count >= $block->getMaximumNumberOfRelatedProductsToDisplay()) {
+                            break;
+                        } ?>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+</div>
+
+<script type="text/x-magento-init">
+    {
+        "#zero1-advanced-success": {
+            "Zero1_ImprovedCheckoutSuccessPage/js/success": {
+                "config": {"key":"value"}
+            }
+        }
+    }
+</script>

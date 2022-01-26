@@ -1,0 +1,18 @@
+{
+    "name": "zero1/module-improved-checkout-success-page",
+    "description": "Improves the functionality of the Magento 2 Checkout Success page",
+    "type": "magento2-module",
+    "version": "1.0.3",
+    "license": [
+        "OSL-3.0",
+        "AFL-3.0"
+    ],    
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Zero1\\ImprovedCheckoutSuccessPage\\": ""
+        }
+    }
+}
