@@ -1,8 +1,8 @@
 <?php
 
-namespace Zero1\ImprovedCheckoutSuccessPage\Block\Onepage;
+namespace Zero1\ImprovedCheckoutSuccessPageHyva\Block\Onepage;
 
-use Zero1\ImprovedCheckoutSuccessPage\Model\Source\Blocks as SourceModelBlocks;
+use Zero1\ImprovedCheckoutSuccessPageHyva\Model\Source\Blocks as SourceModelBlocks;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Media\Config as MediaConfig;
 use Magento\Framework\Api\SearchCriteriaBuilder;
