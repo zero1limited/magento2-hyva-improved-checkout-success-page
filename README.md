@@ -34,7 +34,7 @@ Before you go into production with this module, we recommend that you check with
 ## Installation
 
 ```
-composer require zero1/module-improved-checkout-success-page
+composer require zero1/module-improved-checkout-success-page-hyva
 ```
 
 Support
