@@ -71,7 +71,7 @@
                 </field>
                 <field id="block_id" translate="label" type="select" sortOrder="20" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Static Block</label>
-                    <source_model>Zero1\ImprovedCheckoutSuccessPage\Model\Source\Blocks</source_model>
+                    <source_model>Zero1\ImprovedCheckoutSuccessPageHyva\Model\Source\Blocks</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
@@ -99,7 +99,7 @@
                 </field>
                 <field id="image_type" translate="label" type="select" sortOrder="40" showInDefault="1" showInWebsite="1" showInStore="1" canRestore="1">
                     <label>Related Product Image Type</label>
-                    <source_model>Zero1\ImprovedCheckoutSuccessPage\Model\Source\Image</source_model>
+                    <source_model>Zero1\ImprovedCheckoutSuccessPageHyva\Model\Source\Image</source_model>
                     <depends>
                         <field id="enable">1</field>
                     </depends>
