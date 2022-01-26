@@ -1,15 +1,14 @@
 <?xml version="1.0"?>
 <page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" layout="1column" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
-    <head>
-        <css src="Zero1_ImprovedCheckoutSuccessPage::css/success.css" />
-    </head>
     <body>
         <referenceBlock name="page.main.title" remove="true" />
         <referenceBlock name="checkout.success" remove="true" />
         <referenceBlock name="messages" remove="true" />
-        <move element="checkout.registration" destination="content" after="zero1_success" />
+        <referenceBlock name="checkout.registration" remove="true" />
         <referenceContainer name="content">
-            <block class="Zero1\ImprovedCheckoutSuccessPage\Block\Onepage\Success" name="zero1_success" template="Zero1_ImprovedCheckoutSuccessPage::success.phtml" before="-" />
+            <block class="Zero1\ImprovedCheckoutSuccessPage\Block\Onepage\Success" name="zero1_success" template="Zero1_ImprovedCheckoutSuccessPage::success.phtml" before="-">
+            	<block class="Magento\Checkout\Block\Registration" name="checkout.registration.success" as="checkout.registration.success" template="Zero1_ImprovedCheckoutSuccessPage::registration.phtml" cacheable="false"/>
+        	</block>
         </referenceContainer>
     </body>
 </page>
