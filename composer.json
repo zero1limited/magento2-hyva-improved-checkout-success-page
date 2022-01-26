@@ -1,8 +1,8 @@
 {
-    "name": "zero1/module-improved-checkout-success-page",
-    "description": "Improves the functionality of the Magento 2 Checkout Success page",
+    "name": "zero1/module-improved-checkout-success-page-hyva",
+    "description": "Improves the functionality of the Magento 2 Checkout Success page (Hyva version)",
     "type": "magento2-module",
-    "version": "1.0.3",
+    "version": "1.0.0",
     "license": [
         "OSL-3.0",
         "AFL-3.0"
@@ -12,7 +12,7 @@
             "registration.php"
         ],
         "psr-4": {
-            "Zero1\\ImprovedCheckoutSuccessPage\\": ""
+            "Zero1\\ImprovedCheckoutSuccessPageHyva\\": ""
         }
     }
 }
