@@ -194,15 +194,6 @@ class Success extends Template
         return $this->_scopeConfig->isSetFlag('improved_checkout_success_page/' . $group . '/' . $path);
     }
 
-    public function getRowSortOrder($group)
-    {
-        $rowSortOrder = $this->getConfigValue($group, 'row_sort_order');
-        if ($rowSortOrder != '') {
-            return $rowSortOrder;
-        }
-        return '1';
-    }
-
     public function getStaticBlockToRender()
     {
         if ($this->getConfigFlag('cms_static_block_row', 'enable') === true) {
@@ -210,38 +201,6 @@ class Success extends Template
             return $this->getLayout()->createBlock('Magento\Cms\Block\Block')->setBlockId($blockId)->toHtml();
         }
         return null;
-    }
-
-    public function getOrderInformationColumnCount()
-    {
-        $count = 0;
-        $order = $this->getConfigFlag('order_information_row', 'enable_order_information');
-        $shipping = $this->getConfigFlag('order_information_row', 'enable_shipping_information');
-        $billing = $this->getConfigFlag('order_information_row', 'enable_billing_information');
-        if ($order === true) {
-            $count++;
-        }
-        if ($shipping === true) {
-            $count++;
-        }
-        if ($billing === true) {
-            $count++;
-        }
-        $result = '';
-        switch ($count) {
-            case 1:
-                $result = 'one-col';
-                break;
-            case 2:
-                $result = 'two-col';
-                break;
-            case 3:
-                $result = 'three-col';
-                break;
-            default:
-                break;
-        }
-        return $result;
     }
 
     public function getPageTitle()
@@ -268,12 +227,4 @@ class Success extends Template
         return null;
     }
 
-    public function getNewsletterText()
-    {
-        $newsletterText = $this->getConfigValue('newsletter_row', 'newsletter_text');
-        if ($newsletterText != '') {
-            return $newsletterText;
-        }
-        return null;
-    }
 }
