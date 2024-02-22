@@ -206,15 +206,15 @@ class Success extends Template
     public function getPageTitle()
     {
         $pageTitle = $this->getConfigValue('general', 'page_title');
-        $pageTitle = preg_replace("/%customer_name%/", '<span>' . $this->getCustomerName() . '</span>', $pageTitle);
+        $pageTitle = preg_replace("/%customer_name%/", '<span>' . $this->getCustomerName() . '</span>', $pageTitle ?? '');
         return $pageTitle;
     }
 
     public function getIntroText()
     {
         $introText = $this->getConfigValue('general', 'intro_text');
-        $introText = preg_replace("/%customer_name%/", $this->getCustomerDetails()['name'], $introText);
-        $introText = preg_replace("/%customer_email%/", $this->getCustomerDetails()['email'], $introText);
+        $introText = preg_replace("/%customer_name%/", $this->getCustomerDetails()['name'], $introText ?? '');
+        $introText = preg_replace("/%customer_email%/", $this->getCustomerDetails()['email'], $introText ?? '');
         return $introText;
     }
 
