@@ -1,7 +1,7 @@
 <?php
 /** @var Zero1\ImprovedCheckoutSuccessPageHyva\Block\Onepage\Success $block */
 ?>
-<div id="zero1-advanced-success">
+<div id="zero1-advanced-success" class="my-6">
     <div class="card">
         <h1 class="text-gray-900 page-title title-font font-bold text-3xl"><span><?php echo $block->getPageTitle(); ?></span></h1>
         <?php if ($block->getIntroText() != '') : ?>
@@ -100,7 +100,7 @@
     <?php endif; ?>
     
     <?php if ($block->getNewsletterBlock() !== null) : ?>
-        <div class="card mt-8">
+        <div class="card">
             <?php echo $block->getNewsletterBlock(); ?>
         </div>
     <?php endif; ?>
