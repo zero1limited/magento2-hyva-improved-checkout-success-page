@@ -213,8 +213,8 @@ class Success extends Template
     public function getIntroText()
     {
         $introText = $this->getConfigValue('general', 'intro_text');
-        $introText = preg_replace("/%customer_name%/", $this->getCustomerDetails()['name'], $introText ?? '');
-        $introText = preg_replace("/%customer_email%/", $this->getCustomerDetails()['email'], $introText ?? '');
+        $introText = preg_replace("/%customer_name%/", (string)$this->getCustomerDetails()['name'], $introText ?? '');
+        $introText = preg_replace("/%customer_email%/", (string)$this->getCustomerDetails()['email'], $introText ?? '');
         return $introText;
     }
 
