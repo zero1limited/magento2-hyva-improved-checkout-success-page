@@ -9,6 +9,7 @@ use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 use Magento\Checkout\Model\Session\Proxy as CheckoutSession;
 use Magento\Store\Model\Store;
+use Magento\Framework\Locale\CurrencyInterface;
 
 class Success extends Template
 {
@@ -40,6 +41,12 @@ class Success extends Template
      */
     private $store;
 
+    /**
+     * @var CurrencyInterface
+     */
+
+    private $currency;
+
     public function __construct(
         Template\Context $context,
         CheckoutSession $checkoutSession,
@@ -48,6 +55,7 @@ class Success extends Template
         SourceModelBlocks $blocks,
         MediaConfig $mediaConfig,
         Store $store,
+        CurrencyInterface $currency,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -58,6 +66,7 @@ class Success extends Template
         $this->blocks = $blocks;
         $this->mediaConfig = $mediaConfig;
         $this->store = $store;
+        $this->currency = $currency;
     }
 
     public function getCustomerDetails()
@@ -84,10 +93,14 @@ class Success extends Template
 
     public function getOrderDetails()
     {
+        $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
+        $dateOrderWasPlacedFull = $this->order->getCreatedAtFormatted(\IntlDateFormatter::LONG); // "5 March 2024 at 09:16:24 GMT"
+        $dateOrderWasPlaced = preg_replace('/\sat\s.*$/', '', $dateOrderWasPlacedFull);
+
         return [
             'incrementId' => $this->order->getIncrementId(),
-            'baseGrandTotal' => number_format($this->order->getBaseGrandTotal(), 2),
-            'createdAt' => $this->order->getCreatedAt()
+            'baseGrandTotal' => $currencySymbol . number_format($this->order->getBaseGrandTotal(), 2),
+            'createdAt' => $dateOrderWasPlaced
         ];
     }
 
