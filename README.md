@@ -1,6 +1,12 @@
 # Magento 2 / Hyva - Improved Checkout Success Page
 
-For Magento 2.0.x, 2.1.x, 2.2.x, 2.3.x and 2.4.x
+For Magento 2.2.x, 2.3.x and 2.4.x
+
+## Pitch
+TODO
+
+## Ways we measure results
+TODO
 
 ## Benefits
 
