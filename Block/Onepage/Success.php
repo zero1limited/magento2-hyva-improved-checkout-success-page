@@ -106,16 +106,19 @@ class Success extends Template
 
     public function getShippingDetails()
     {
-        return [
-            'customerName' => $this->order->getShippingAddress()->getFirstname()
-                . ' ' . $this->order->getShippingAddress()->getLastname(),
-            'company' => $this->order->getShippingAddress()->getCompany(),
-            'street' => $this->order->getShippingAddress()->getStreet(),
-            'city' => $this->order->getShippingAddress()->getCity(),
-            'region' => $this->order->getShippingAddress()->getRegion(),
-            'postcode' => $this->order->getShippingAddress()->getPostcode(),
-            'countryId' => $this->order->getShippingAddress()->getCountryId()
-        ];
+        $shippingAddress = $this->order->getShippingAddress();
+        if ($shippingAddress) {
+            return [
+                'customerName' => $shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname(),
+                'company' => $shippingAddress->getCompany(),
+                'street' => $shippingAddress->getStreet(),
+                'city' => $shippingAddress->getCity(),
+                'region' => $shippingAddress->getRegion(),
+                'postcode' => $shippingAddress->getPostcode(),
+                'countryId' => $shippingAddress->getCountryId()
+            ];
+        }
+        return [];
     }
 
     public function getBillingDetails()
