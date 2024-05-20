@@ -22,24 +22,37 @@
             <?php endif; ?>
 
             <?php if ($block->getConfigFlag('order_information_row', 'enable_shipping_information') === true) : ?>
-                <div class="card w-full shipping">
-                    <h3 class="font-bold mb-2 text-2xl"><?php echo __('Shipping Details'); ?></h3>
-                    <?php if ($block->getShippingDetails()['company']) : ?>
-                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['company']); ?></p>
-                    <?php endif; ?>
-                    <?php if (!empty($block->getShippingDetails()['street'][1])) : ?>
-                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]) . ' ' .
-                                $block->escapeHtml($block->getShippingDetails()['street'][1]); ?></p>
-                    <?php else : ?>
-                        <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]); ?></p>
-                    <?php endif; ?>
-                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['city']); ?></p>
-                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['region']); ?></p>
-                    <p><?php echo $block->escapeHtml($block->getShippingDetails()['postcode']); ?></p>
-                    <?php if ($block->getShippingDetails()['countryId']) : ?>
-                        <p><?php $block->escapeHtml($block->getShippingDetails()['countryId']); ?></p>
-                    <?php endif; ?>
-                </div>
+                <?php if (count($block->getShippingDetails()) > 0) : ?>
+                    <div class="card w-full shipping">
+                        <h3 class="font-bold mb-2 text-2xl"><?php echo __('Shipping Details'); ?></h3>
+                        <?php if (!empty($block->getShippingDetails()['company'])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['company']); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($block->getShippingDetails()['street'][0])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]); ?></p>
+                        <?php endif; ?>
+                        <?php if (!empty($block->getShippingDetails()['street'][1])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][1]); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (!empty($block->getShippingDetails()['city'])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['city']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (!empty($block->getShippingDetails()['region'])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['region']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (!empty($block->getShippingDetails()['postcode'])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['postcode']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (!empty($block->getShippingDetails()['countryId'])) : ?>
+                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['countryId']); ?></p>
+                        <?php endif; ?>
+
+                    </div>
+                <?php endif; ?>
             <?php endif; ?>
 
             <?php if ($block->getConfigFlag('order_information_row', 'enable_billing_information') === true) : ?>
