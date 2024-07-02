@@ -22,33 +22,34 @@
             <?php endif; ?>
 
             <?php if ($block->getConfigFlag('order_information_row', 'enable_shipping_information') === true) : ?>
-                <?php if (count($block->getShippingDetails()) > 0) : ?>
+                <?php $shippingDetails = $block->getShippingDetails(); ?>
+                <?php if (!empty($shippingDetails)) : ?>
                     <div class="card w-full shipping">
                         <h3 class="font-bold mb-2 text-2xl"><?php echo __('Shipping Details'); ?></h3>
-                        <?php if (!empty($block->getShippingDetails()['company'])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['company']); ?></p>
+                        <?php if (!empty($shippingDetails['company'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['company']); ?></p>
                         <?php endif; ?>
-                        <?php if (!empty($block->getShippingDetails()['street'][0])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][0]); ?></p>
+                        <?php if (!empty($shippingDetails['street'][0])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['street'][0]); ?></p>
                         <?php endif; ?>
-                        <?php if (!empty($block->getShippingDetails()['street'][1])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['street'][1]); ?></p>
-                        <?php endif; ?>
-
-                        <?php if (!empty($block->getShippingDetails()['city'])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['city']); ?></p>
+                        <?php if (!empty($shippingDetails['street'][1])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['street'][1]); ?></p>
                         <?php endif; ?>
 
-                        <?php if (!empty($block->getShippingDetails()['region'])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['region']); ?></p>
+                        <?php if (!empty($shippingDetails['city'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['city']); ?></p>
                         <?php endif; ?>
 
-                        <?php if (!empty($block->getShippingDetails()['postcode'])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['postcode']); ?></p>
+                        <?php if (!empty($shippingDetails['region'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['region']); ?></p>
                         <?php endif; ?>
 
-                        <?php if (!empty($block->getShippingDetails()['countryId'])) : ?>
-                            <p><?php echo $block->escapeHtml($block->getShippingDetails()['countryId']); ?></p>
+                        <?php if (!empty($shippingDetails['postcode'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['postcode']); ?></p>
+                        <?php endif; ?>
+
+                        <?php if (!empty($shippingDetails['countryId'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['countryId']); ?></p>
                         <?php endif; ?>
 
                     </div>
@@ -56,20 +57,27 @@
             <?php endif; ?>
 
             <?php if ($block->getConfigFlag('order_information_row', 'enable_billing_information') === true) : ?>
+                <?php $billingDetails = $block->getBillingDetails(); ?>
                 <div class="card w-full billing">
                     <h3 class="font-bold mb-2 text-2xl"><?php echo __('Billing Details'); ?></h3>
-                    <?php if ($block->getBillingDetails()['company']) : ?>
-                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['company']); ?></p>
+                    <?php if (!empty($billingDetails['company'])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['company']); ?></p>
                     <?php endif; ?>
-                    <?php if (!empty($block->getBillingDetails()['street'][1])) : ?>
-                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['street'][0]) . ' ' .
-                                $block->escapeHtml($block->getBillingDetails()['street'][1]); ?></p>
-                    <?php else : ?>
-                        <p><?php echo $block->escapeHtml($block->getBillingDetails()['street'][0]); ?></p>
+                    <?php if (!empty($billingDetails['street'][0])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['street'][0]); ?></p>
                     <?php endif; ?>
-                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['city']); ?></p>
-                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['region']); ?></p>
-                    <p><?php echo $block->escapeHtml($block->getBillingDetails()['postcode']); ?></p>
+                    <?php if (!empty($billingDetails['street'][1])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['street'][0]) . ' ' . $block->escapeHtml($billingDetails['street'][1]); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($billingDetails['city'])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['city']); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($billingDetails['region'])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['region']); ?></p>
+                    <?php endif; ?>
+                    <?php if (!empty($billingDetails['postcode'])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['postcode']); ?></p>
+                    <?php endif; ?>
                 </div>
             <?php endif; ?>
         </div>
