@@ -11,6 +11,12 @@
                 <enable_shipping_information>1</enable_shipping_information>
                 <enable_billing_information>1</enable_billing_information>
             </order_information_row>
+            <line_items_row>
+                <enable>0</enable>
+                <title>Items in your order</title>
+                <image_type>small_image</image_type>
+                <show_subtotal>1</show_subtotal>
+            </line_items_row>
             <cms_static_block_row>
                 <enable>0</enable>
             </cms_static_block_row>
