@@ -134,14 +134,135 @@ class Success extends Template
 
     public function getBillingDetails()
     {
+        $billingAddress = $this->order->getBillingAddress();
+        if (!$billingAddress) {
+            return [];
+        }
         return [
-            'company' => $this->order->getBillingAddress()->getCompany(),
-            'street' => $this->order->getBillingAddress()->getStreet(),
-            'city' => $this->order->getBillingAddress()->getCity(),
-            'region' => $this->order->getBillingAddress()->getRegion(),
-            'postcode' => $this->order->getBillingAddress()->getPostcode(),
-            'countryId' => $this->order->getBillingAddress()->getCountryId()
+            'customerName' => trim($billingAddress->getFirstname() . ' ' . $billingAddress->getLastname()),
+            'company' => $billingAddress->getCompany(),
+            'street' => $billingAddress->getStreet(),
+            'city' => $billingAddress->getCity(),
+            'region' => $billingAddress->getRegion(),
+            'postcode' => $billingAddress->getPostcode(),
+            'countryId' => $billingAddress->getCountryId()
         ];
+    }
+
+    /**
+     * Get formatted line item data for each item in the order.
+     *
+     * Configurable parents (e.g. configurable, bundle) are returned with their
+     * children excluded so each visible row reflects what the customer sees in cart.
+     *
+     * @return array
+     */
+    public function getOrderItemsDetails()
+    {
+        $items = [];
+        $orderItems = $this->order->getAllVisibleItems();
+        if (!$orderItems) {
+            return $items;
+        }
+
+        $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
+
+        foreach ($orderItems as $orderItem) {
+            $qty = (float)$orderItem->getQtyOrdered();
+            $rowTotal = (float)$orderItem->getRowTotalInclTax();
+            if (!$rowTotal) {
+                $rowTotal = (float)$orderItem->getRowTotal();
+            }
+            $price = (float)$orderItem->getPriceInclTax();
+            if (!$price) {
+                $price = (float)$orderItem->getPrice();
+            }
+
+            $items[] = [
+                'name' => $orderItem->getName(),
+                'sku' => $orderItem->getSku(),
+                'qty' => $qty,
+                'qtyFormatted' => rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.'),
+                'price' => $currencySymbol . number_format($price, 2),
+                'rowTotal' => $currencySymbol . number_format($rowTotal, 2),
+                'image' => $this->getOrderItemImage($orderItem),
+                'options' => $this->getOrderItemOptions($orderItem),
+            ];
+        }
+
+        return $items;
+    }
+
+    /**
+     * Get the configured image URL for an order line item.
+     *
+     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
+     * @return string
+     */
+    public function getOrderItemImage($orderItem)
+    {
+        try {
+            $product = $this->productRepository->get($orderItem->getSku());
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            return '';
+        }
+
+        $imageType = $this->getOrderItemsImageType();
+        $imagePath = $product->getImage($imageType);
+        if (!$imagePath || $imagePath === 'no_selection') {
+            $imagePath = $product->getImage('image');
+        }
+        if (!$imagePath || $imagePath === 'no_selection') {
+            return '';
+        }
+
+        return $this->mediaConfig->getBaseMediaUrl() . $imagePath;
+    }
+
+    /**
+     * Configurable image type for line items, defaults to small_image.
+     *
+     * @return string
+     */
+    public function getOrderItemsImageType()
+    {
+        $type = $this->getConfigValue('line_items_row', 'image_type');
+        return $type ?: 'small_image';
+    }
+
+    /**
+     * Custom options / configurable selections in label => value form.
+     *
+     * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
+     * @return array
+     */
+    public function getOrderItemOptions($orderItem)
+    {
+        $options = [];
+        $productOptions = $orderItem->getProductOptions();
+        if (!is_array($productOptions)) {
+            return $options;
+        }
+
+        if (!empty($productOptions['attributes_info'])) {
+            foreach ($productOptions['attributes_info'] as $attribute) {
+                $options[] = [
+                    'label' => $attribute['label'] ?? '',
+                    'value' => $attribute['value'] ?? '',
+                ];
+            }
+        }
+
+        if (!empty($productOptions['options'])) {
+            foreach ($productOptions['options'] as $option) {
+                $options[] = [
+                    'label' => $option['label'] ?? '',
+                    'value' => $option['value'] ?? '',
+                ];
+            }
+        }
+
+        return $options;
     }
 
     public function getRelatedProductIdsOfOrderItems()
