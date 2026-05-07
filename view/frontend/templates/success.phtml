@@ -26,6 +26,9 @@
                 <?php if (!empty($shippingDetails)) : ?>
                     <div class="card w-full shipping">
                         <h3 class="font-bold mb-2 text-2xl"><?php echo __('Shipping Details'); ?></h3>
+                        <?php if (!empty($shippingDetails['customerName'])) : ?>
+                            <p><?php echo $block->escapeHtml($shippingDetails['customerName']); ?></p>
+                        <?php endif; ?>
                         <?php if (!empty($shippingDetails['company'])) : ?>
                             <p><?php echo $block->escapeHtml($shippingDetails['company']); ?></p>
                         <?php endif; ?>
@@ -60,6 +63,9 @@
                 <?php $billingDetails = $block->getBillingDetails(); ?>
                 <div class="card w-full billing">
                     <h3 class="font-bold mb-2 text-2xl"><?php echo __('Billing Details'); ?></h3>
+                    <?php if (!empty($billingDetails['customerName'])) : ?>
+                        <p><?php echo $block->escapeHtml($billingDetails['customerName']); ?></p>
+                    <?php endif; ?>
                     <?php if (!empty($billingDetails['company'])) : ?>
                         <p><?php echo $block->escapeHtml($billingDetails['company']); ?></p>
                     <?php endif; ?>
@@ -81,6 +87,70 @@
                 </div>
             <?php endif; ?>
         </div>
+    <?php endif; ?>
+
+    <?php if ($block->getConfigFlag('line_items_row', 'enable') === true) : ?>
+        <?php $orderItems = $block->getOrderItemsDetails(); ?>
+        <?php if (count($orderItems) > 0) : ?>
+            <div class="card mb-8 line-items">
+                <?php if ($block->getConfigValue('line_items_row', 'title')) : ?>
+                    <h3 class="font-bold mb-4 text-2xl">
+                        <?php echo $block->escapeHtml($block->getConfigValue('line_items_row', 'title')); ?>
+                    </h3>
+                <?php endif; ?>
+                <?php foreach ($orderItems as $orderItem) : ?>
+                    <div class="flex gap-4 py-4 border-b last:border-b-0 border-gray-200">
+                        <?php if (!empty($orderItem['image'])) : ?>
+                            <div class="line-item-image shrink-0" style="width:88px;">
+                                <img class="h-auto"
+                                     style="width:88px;height:auto;"
+                                     width="88"
+                                     src="<?php echo $block->escapeUrl($orderItem['image']); ?>"
+                                     alt="<?php echo $block->escapeHtmlAttr($orderItem['name']); ?>"
+                                     loading="lazy" />
+                            </div>
+                        <?php endif; ?>
+                        <div class="line-item-details flex-1 flex flex-col sm:flex-row sm:items-start gap-2">
+                            <div class="line-item-info flex-1">
+                                <p class="font-semibold"><?php echo $block->escapeHtml($orderItem['name']); ?></p>
+                                <?php if (!empty($orderItem['sku'])) : ?>
+                                    <p class="text-sm">
+                                        <?php echo __('SKU'); ?>: <?php echo $block->escapeHtml($orderItem['sku']); ?>
+                                    </p>
+                                <?php endif; ?>
+                                <?php if (!empty($orderItem['options'])) : ?>
+                                    <dl class="text-sm mt-1">
+                                        <?php foreach ($orderItem['options'] as $option) : ?>
+                                            <?php if (empty($option['label'])) { continue; } ?>
+                                            <div class="flex gap-1">
+                                                <dt class="font-medium"><?php echo $block->escapeHtml($option['label']); ?>:</dt>
+                                                <dd><?php echo $block->escapeHtml($option['value']); ?></dd>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </dl>
+                                <?php endif; ?>
+                            </div>
+                            <div class="line-item-pricing shrink-0 text-left sm:text-right whitespace-nowrap">
+                                <p>
+                                    <span class="font-medium"><?php echo __('Price'); ?>:</span>
+                                    <span><?php echo $block->escapeHtml($orderItem['price']); ?></span>
+                                </p>
+                                <p>
+                                    <span class="font-medium"><?php echo __('Qty'); ?>:</span>
+                                    <span><?php echo $block->escapeHtml($orderItem['qtyFormatted']); ?></span>
+                                </p>
+                                <?php if ($block->getConfigFlag('line_items_row', 'show_subtotal') === true) : ?>
+                                    <p>
+                                        <span class="font-medium"><?php echo __('Subtotal'); ?>:</span>
+                                        <span class="font-semibold"><?php echo $block->escapeHtml($orderItem['rowTotal']); ?></span>
+                                    </p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
     <?php endif; ?>
 
     <?php if ($block->getStaticBlockToRender() !== null) : ?>
