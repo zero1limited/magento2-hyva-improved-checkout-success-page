@@ -5,6 +5,7 @@ namespace Zero1\ImprovedCheckoutSuccessPageHyva\Block\Onepage;
 use Zero1\ImprovedCheckoutSuccessPageHyva\Model\Source\Blocks as SourceModelBlocks;
 use Magento\Catalog\Api\ProductRepositoryInterface;
 use Magento\Catalog\Model\Product\Media\Config as MediaConfig;
+use Magento\ConfigurableProduct\Model\Product\Type\Configurable as ConfigurableType;
 use Magento\Framework\Api\SearchCriteriaBuilder;
 use Magento\Framework\View\Element\Template;
 use Magento\Checkout\Model\Session\Proxy as CheckoutSession;
@@ -37,6 +38,11 @@ class Success extends Template
     private $mediaConfig;
 
     /**
+     * @var ConfigurableType
+     */
+    private $configurableType;
+
+    /**
      * @var Store
      */
     private $store;
@@ -56,6 +62,7 @@ class Success extends Template
         MediaConfig $mediaConfig,
         Store $store,
         CurrencyInterface $currency,
+        ConfigurableType $configurableType,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -67,6 +74,7 @@ class Success extends Template
         $this->mediaConfig = $mediaConfig;
         $this->store = $store;
         $this->currency = $currency;
+        $this->configurableType = $configurableType;
     }
 
     public function getCustomerDetails()
@@ -168,25 +176,28 @@ class Success extends Template
         $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
 
         foreach ($orderItems as $orderItem) {
-            $qty = (float)$orderItem->getQtyOrdered();
-            $rowTotal = (float)$orderItem->getRowTotalInclTax();
-            if (!$rowTotal) {
-                $rowTotal = (float)$orderItem->getRowTotal();
+            // Skip child items and zero-price fulfilment rows (e.g. bundle components
+            // added as standalone order items by third-party modules).
+            if ($orderItem->getParentItemId()) {
+                continue;
             }
-            $price = (float)$orderItem->getPriceInclTax();
-            if (!$price) {
-                $price = (float)$orderItem->getPrice();
+            $price = (float)$orderItem->getPriceInclTax() ?: (float)$orderItem->getPrice();
+            $rowTotal = (float)$orderItem->getRowTotalInclTax() ?: (float)$orderItem->getRowTotal();
+            if ($price == 0.0 && $rowTotal == 0.0) {
+                continue;
             }
 
+            $qty = (float)$orderItem->getQtyOrdered();
+
             $items[] = [
-                'name' => $orderItem->getName(),
-                'sku' => $orderItem->getSku(),
-                'qty' => $qty,
+                'name'         => $orderItem->getName(),
+                'sku'          => $orderItem->getSku(),
+                'qty'          => $qty,
                 'qtyFormatted' => rtrim(rtrim(number_format($qty, 2, '.', ''), '0'), '.'),
-                'price' => $currencySymbol . number_format($price, 2),
-                'rowTotal' => $currencySymbol . number_format($rowTotal, 2),
-                'image' => $this->getOrderItemImage($orderItem),
-                'options' => $this->getOrderItemOptions($orderItem),
+                'price'        => $currencySymbol . number_format($price, 2),
+                'rowTotal'     => $currencySymbol . number_format($rowTotal, 2),
+                'image'        => $this->getOrderItemImage($orderItem),
+                'options'      => $this->getOrderItemOptions($orderItem),
             ];
         }
 
@@ -201,22 +212,70 @@ class Success extends Template
      */
     public function getOrderItemImage($orderItem)
     {
+        // getProductId() returns the parent product for configurable/bundle order items,
+        // which is where the images live. Try this first.
+        try {
+            $url = $this->resolveProductImageUrl(
+                $this->productRepository->getById((int)$orderItem->getProductId())
+            );
+            if ($url) {
+                return $url;
+            }
+        } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
+            // fall through
+        }
+
+        // Fallback: look up by SKU. For a simple product this is the same as above.
+        // For a configurable child SKU with no images, also try the configurable parent.
         try {
             $product = $this->productRepository->get($orderItem->getSku());
+            $url = $this->resolveProductImageUrl($product);
+            if ($url) {
+                return $url;
+            }
+
+            $parentIds = $this->configurableType->getParentIdsByChild($product->getId());
+            if (!empty($parentIds)) {
+                $url = $this->resolveProductImageUrl(
+                    $this->productRepository->getById($parentIds[0])
+                );
+                if ($url) {
+                    return $url;
+                }
+            }
         } catch (\Magento\Framework\Exception\NoSuchEntityException $e) {
-            return '';
+            // no product found
         }
 
+        return '';
+    }
+
+    /**
+     * Try all standard image roles then the raw media gallery to find a usable URL.
+     * Returns empty string if no image can be found.
+     */
+    private function resolveProductImageUrl($product): string
+    {
         $imageType = $this->getOrderItemsImageType();
-        $imagePath = $product->getImage($imageType);
-        if (!$imagePath || $imagePath === 'no_selection') {
-            $imagePath = $product->getImage('image');
-        }
-        if (!$imagePath || $imagePath === 'no_selection') {
-            return '';
+
+        foreach ([$imageType, 'image', 'small_image', 'thumbnail'] as $role) {
+            $path = $product->getData($role);
+            if ($path && $path !== 'no_selection') {
+                return $this->mediaConfig->getBaseMediaUrl() . $path;
+            }
         }
 
-        return $this->mediaConfig->getBaseMediaUrl() . $imagePath;
+        // getMediaGalleryImages() may not be populated via repository; use raw gallery data.
+        $galleryImages = $product->getMediaGallery('images');
+        if (is_array($galleryImages)) {
+            foreach ($galleryImages as $image) {
+                if (!empty($image['file']) && empty($image['disabled'])) {
+                    return $this->mediaConfig->getBaseMediaUrl() . $image['file'];
+                }
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -244,6 +303,7 @@ class Success extends Template
             return $options;
         }
 
+        // Configurable attributes (e.g. Size: Large, Color: Blue)
         if (!empty($productOptions['attributes_info'])) {
             foreach ($productOptions['attributes_info'] as $attribute) {
                 $options[] = [
@@ -253,6 +313,24 @@ class Success extends Template
             }
         }
 
+        // Bundle selections (each bundle option with its chosen item)
+        if (!empty($productOptions['bundle_options'])) {
+            foreach ($productOptions['bundle_options'] as $bundleOption) {
+                if (empty($bundleOption['value'])) {
+                    continue;
+                }
+                foreach ($bundleOption['value'] as $bundleValue) {
+                    $qty = (int)($bundleValue['qty'] ?? 1);
+                    $title = $bundleValue['title'] ?? '';
+                    $options[] = [
+                        'label' => $bundleOption['label'] ?? '',
+                        'value' => ($qty > 1 ? $qty . ' x ' : '') . $title,
+                    ];
+                }
+            }
+        }
+
+        // Custom options (dropdowns, text fields, etc.)
         if (!empty($productOptions['options'])) {
             foreach ($productOptions['options'] as $option) {
                 $options[] = [
