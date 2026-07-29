@@ -112,6 +112,25 @@ class Success extends Template
         ];
     }
 
+	public function getMoreOrderDetails()
+    {
+        $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
+        $shippingAmount = $this->order->getShippingAmount();
+        if ((float) $shippingAmount == 0.0) {
+            $shippingAmount = 'FREE';
+        } else {
+            $shippingAmount = $currencySymbol . number_format($shippingAmount, 2);
+        }
+        return [
+            'shippingMethod' => $this->order->getShippingDescription(),
+            'shippingAmount' => $shippingAmount,
+            'grandTotalExVat' => $currencySymbol . number_format($this->order->getSubtotal(), 2),
+            'taxAmount' => $currencySymbol . number_format($this->order->getTaxAmount(), 2),
+            'grandTotalIncVat' => $currencySymbol . number_format($this->order->getGrandTotal(), 2)
+            
+        ];
+    }
+
     public function getShippingDetails()
     {
         $shippingAddress = $this->order->getShippingAddress();
