@@ -77,7 +77,7 @@ class Success extends Template
         $this->configurableType = $configurableType;
     }
 
-    public function getCustomerDetails()
+    public function getCustomerDetails(): array
     {
         return [
             'name' => $this->getCustomerName(),
@@ -85,7 +85,7 @@ class Success extends Template
         ];
     }
 
-    public function getCustomerName()
+    public function getCustomerName(): string
     {
         $useCheckoutNameForGuestCustomers = $this->getConfigFlag('general', 'use_chekout_name_for_guest_customers');
         $guestCustomerName = $this->getConfigValue('general', 'guest_name');
@@ -99,42 +99,50 @@ class Success extends Template
         return $this->order->getCustomerFirstname() . ' ' . $this->order->getCustomerLastname();
     }
 
-    public function getOrderDetails()
+    public function getOrderDetails(): array
     {
         $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
+
         $dateOrderWasPlacedFull = $this->order->getCreatedAtFormatted(\IntlDateFormatter::LONG); // "5 March 2024 at 09:16:24 GMT"
         $dateOrderWasPlaced = preg_replace('/\sat\s.*$/', '', $dateOrderWasPlacedFull);
 
-        return [
-            'incrementId' => $this->order->getIncrementId(),
-            'baseGrandTotal' => $currencySymbol . number_format($this->order->getBaseGrandTotal(), 2),
-            'createdAt' => $dateOrderWasPlaced
-        ];
-    }
-
-	public function getMoreOrderDetails()
-    {
-        $currencySymbol = $this->currency->getCurrency($this->order->getOrderCurrencyCode())->getSymbol();
         $shippingAmount = $this->order->getShippingAmount();
         if ((float) $shippingAmount == 0.0) {
             $shippingAmount = 'FREE';
         } else {
             $shippingAmount = $currencySymbol . number_format($shippingAmount, 2);
         }
+
+        $taxAmount = $this->order->getTaxAmount();
+        $grandTotalIncVat = $this->order->getGrandTotal();
+        $grandTotalExVat = $grandTotalIncVat - $taxAmount;
+
         return [
             'shippingMethod' => $this->order->getShippingDescription(),
             'shippingAmount' => $shippingAmount,
-            'grandTotalExVat' => $currencySymbol . number_format($this->order->getSubtotal(), 2),
-            'taxAmount' => $currencySymbol . number_format($this->order->getTaxAmount(), 2),
-            'grandTotalIncVat' => $currencySymbol . number_format($this->order->getGrandTotal(), 2)
-            
+            'taxAmount' => $currencySymbol . number_format($taxAmount, 2),
+            'grandTotalExVat' => $currencySymbol . number_format($grandTotalExVat, 2),
+            'grandTotalIncVat' => $currencySymbol . number_format($grandTotalIncVat, 2),
+            'incrementId' => $this->order->getIncrementId(),
+            'createdAt' => $dateOrderWasPlaced
         ];
     }
 
-    public function getShippingDetails()
+    /**
+     * @deprecated 1.1.3
+     * Use getOrderDetails() instead. This method is kept for backward compatibility and will be removed in future versions.
+     *
+     * @return array
+     */
+    public function getMoreOrderDetails(): array
+    {
+        return $this->getOrderDetails();
+    }
+
+    public function getShippingDetails(): array
     {
         $shippingAddress = $this->order->getShippingAddress();
-        
+
         if ($shippingAddress) {
             return [
                 'customerName' => $shippingAddress->getFirstname() . ' ' . $shippingAddress->getLastname(),
@@ -145,21 +153,20 @@ class Success extends Template
                 'postcode' => $shippingAddress->getPostcode(),
                 'countryId' => $shippingAddress->getCountryId()
             ];
-        } else {
-            return [
-                'customerName' => '',
-                'company' => '',
-                'street' => '',
-                'city' => '',
-                'region' => '',
-                'postcode' => '',
-                'countryId' => ''
-            ];
         }
+        return [
+            'customerName' => '',
+            'company' => '',
+            'street' => '',
+            'city' => '',
+            'region' => '',
+            'postcode' => '',
+            'countryId' => ''
+        ];
     }
-    
 
-    public function getBillingDetails()
+
+    public function getBillingDetails(): array
     {
         $billingAddress = $this->order->getBillingAddress();
         if (!$billingAddress) {
@@ -184,7 +191,7 @@ class Success extends Template
      *
      * @return array
      */
-    public function getOrderItemsDetails()
+    public function getOrderItemsDetails(): array
     {
         $items = [];
         $orderItems = $this->order->getAllVisibleItems();
@@ -229,7 +236,7 @@ class Success extends Template
      * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
      * @return string
      */
-    public function getOrderItemImage($orderItem)
+    public function getOrderItemImage($orderItem): string
     {
         // getProductId() returns the parent product for configurable/bundle order items,
         // which is where the images live. Try this first.
@@ -302,7 +309,7 @@ class Success extends Template
      *
      * @return string
      */
-    public function getOrderItemsImageType()
+    public function getOrderItemsImageType(): string
     {
         $type = $this->getConfigValue('line_items_row', 'image_type');
         return $type ?: 'small_image';
@@ -314,7 +321,7 @@ class Success extends Template
      * @param \Magento\Sales\Api\Data\OrderItemInterface $orderItem
      * @return array
      */
-    public function getOrderItemOptions($orderItem)
+    public function getOrderItemOptions($orderItem): array
     {
         $options = [];
         $productOptions = $orderItem->getProductOptions();
@@ -362,7 +369,7 @@ class Success extends Template
         return $options;
     }
 
-    public function getRelatedProductIdsOfOrderItems()
+    public function getRelatedProductIdsOfOrderItems(): array
     {
         $orderItems = $this->order->getAllItems();
         $relatedProductIdsArray = [];
@@ -389,7 +396,7 @@ class Success extends Template
     {
         return $this->getConfigValue('related_products_row', 'image_type');
     }
-	
+
     public function getRelatedProductImage($relatedProduct)
     {
         $baseMediaUrl = $this->mediaConfig->getBaseMediaUrl();
@@ -471,5 +478,4 @@ class Success extends Template
         }
         return null;
     }
-
 }
