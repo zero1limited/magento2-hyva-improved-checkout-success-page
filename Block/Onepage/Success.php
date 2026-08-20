@@ -11,6 +11,7 @@ use Magento\Framework\View\Element\Template;
 use Magento\Checkout\Model\Session\Proxy as CheckoutSession;
 use Magento\Store\Model\Store;
 use Magento\Framework\Locale\CurrencyInterface;
+use Magento\Framework\ObjectManagerInterface;
 
 class Success extends Template
 {
@@ -63,6 +64,7 @@ class Success extends Template
         Store $store,
         CurrencyInterface $currency,
         ConfigurableType $configurableType,
+        protected ObjectManagerInterface $objectManager,
         array $data = []
     ) {
         parent::__construct($context, $data);
@@ -473,8 +475,19 @@ class Success extends Template
     public function getNewsletterBlock()
     {
         if ($this->getConfigFlag('newsletter_row', 'enable') === true) {
-            return $this->getLayout()->createBlock('Magento\Newsletter\Block\Subscribe')
-                ->setTemplate('Magento_Newsletter::subscribe.phtml')->toHtml();
+
+            if($this->getLayout()->getBlock('form.subscribe')) {
+                return $this->getLayout()->getBlock('form.subscribe')->toHtml();
+            }else{
+                return $this->getLayout()->createBlock('Magento\Newsletter\Block\Subscribe', 
+                    'form.subscribe', 
+                    [
+                        'data' => [
+                            'button_lock_manager' => $this->objectManager->get(\Magento\Framework\View\Element\ButtonLockManager::class) // (@see vendor/magento/module-newsletter/view/frontend/layout/default.xml)
+                        ]
+                    ])
+                    ->setTemplate('Magento_Newsletter::subscribe.phtml')->toHtml();
+            }
         }
         return null;
     }
