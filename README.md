@@ -48,3 +48,4 @@ Support
 If you encounter any problems or bugs, please open an issue on [GitHub](https://github.com/zero1limited/magento2-improved-checkout-success-page/issues).
 
 © Zero-1 Ltd | [www.zero1.co.uk](https://www.zero1.co.uk/)
+
