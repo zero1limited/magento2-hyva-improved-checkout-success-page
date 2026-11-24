@@ -4,6 +4,8 @@
         <improved_checkout_success_page>
             <general>
                 <page_title>Thank you for your order %customer_name%!</page_title>
+                <use_chekout_name_for_guest_customers>0</use_chekout_name_for_guest_customers>
+                <guest_name>Guest</guest_name>
             </general>
             <order_information_row>
                 <enable>1</enable>
