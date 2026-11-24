@@ -96,7 +96,7 @@ class Success extends Template
             if ($useCheckoutNameForGuestCustomers === true) {
                 return $this->getShippingDetails()['customerName'];
             }
-            return $guestCustomerName;
+            return (string) ($guestCustomerName ?: __('Guest'));
         }
         return $this->order->getCustomerFirstname() . ' ' . $this->order->getCustomerLastname();
     }
