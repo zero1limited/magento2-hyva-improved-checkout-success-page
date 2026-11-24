@@ -16,7 +16,7 @@
                 <div class="card w-full order">
                     <h3 class="font-bold mb-2 text-2xl"><?php echo __('Order Details'); ?></h3>
                     <p><?php echo __('Order Number: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['incrementId']) ?></span></p>
-                    <p><?php echo __('Order Total: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['baseGrandTotal']) ?></span></p>
+                    <p><?php echo __('Order Total: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['grandTotalIncVat']) ?></span></p>
                     <p><?php echo __('Order Date: '); ?><span><?php echo $block->escapeHtml($block->getOrderDetails()['createdAt']) ?></span></p>
                 </div>
             <?php endif; ?>
